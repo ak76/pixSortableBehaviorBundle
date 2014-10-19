@@ -38,8 +38,6 @@ class PositionHandler
      */
     public function updatePosition(&$object, $move)
     {
-//        $property = $this->getPropertyName($object);
-
         $last_position = $this->getLastPosition(get_class($object));
         $new_position = $this->getNewPosition($object, $move, $last_position);
         $object->setPosition($new_position);
@@ -79,8 +77,6 @@ class PositionHandler
                 break;
         }
 
-        $this->updateAll($object, $move);
-
         return $new_position;
     }
 
@@ -98,46 +94,5 @@ class PositionHandler
         }
 
         return 0;
-    }
-
-    /**
-     * Reorder all records except moved record
-     * @param $object
-     * @param $move
-     */
-    protected function updateAll($object, $move)
-    {
-        $query = $this->em->createQueryBuilder();
-        $query ->update(get_class($object), 'p');
-
-        switch ($move) {
-            case self::UP:
-                $query->set('p.position', 'p.position + 1')
-                    ->where('p.position = '.($object->getPosition() - 1));
-                break;
-
-            case self::DOWN:
-                $query->set('p.position', 'p.position - 1')
-                    ->where('p.position = '.($object->getPosition() + 1));
-                break;
-
-            case self::TOP:
-                $query->set('p.position', 'p.position + 1')
-                    ->where('p.position < '.$object->getPosition());
-                break;
-
-            case self::BOTTOM:
-                $query->set('p.position', 'p.position - 1')
-                    ->where('p.position > '.$object->getPosition());
-                break;
-        }
-
-        $query->getQuery()->execute();
-    }
-
-    protected function getPropertyName($object)
-    {
-        $metadata = $this->em->getClassMetadata(get_class($object));
-        return $metadata->getFieldMapping($metadata);
     }
 }

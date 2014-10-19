@@ -35,10 +35,23 @@ class PositionHandler
     /**
      * @param $object
      * @param $move
+     */
+    public function updatePosition(&$object, $move)
+    {
+//        $property = $this->getPropertyName($object);
+
+        $last_position = $this->getLastPosition(get_class($object));
+        $new_position = $this->getNewPosition($object, $move, $last_position);
+        $object->setPosition($new_position);
+    }
+
+    /**
+     * @param $object
+     * @param $move
      * @param $last_position
      * @return int
      */
-    public function getNewPosition($object, $move, $last_position)
+    protected function getNewPosition($object, $move, $last_position)
     {
         switch ($move) {
             case self::UP:
@@ -88,11 +101,11 @@ class PositionHandler
     }
 
     /**
-     * Reorder all records exclude moved
+     * Reorder all records except moved record
      * @param $object
      * @param $move
      */
-    public function updateAll($object, $move)
+    protected function updateAll($object, $move)
     {
         $query = $this->em->createQueryBuilder();
         $query ->update(get_class($object), 'p');
@@ -120,5 +133,11 @@ class PositionHandler
         }
 
         $query->getQuery()->execute();
+    }
+
+    protected function getPropertyName($object)
+    {
+        $metadata = $this->em->getClassMetadata(get_class($object));
+        return $metadata->getFieldMapping($metadata);
     }
 }

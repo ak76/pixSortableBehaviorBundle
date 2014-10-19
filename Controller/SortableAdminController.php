@@ -30,11 +30,11 @@ class SortableAdminController extends CRUDController
         $filters['_page'] = $page;
         $object = $this->admin->getObject($id);
 
-        $position_service = $this->get('pix_sortable_behavior.position');
-        $last_position = $position_service->getLastPosition(get_class($object));
-        $new_position = $position_service->getNewPosition($object, $move, $last_position);
-
-        $object->setPosition($new_position);
+        $this->get('pix_sortable_behavior.position')->updatePosition($object, $move);
+//        $last_position = $position_service->getLastPosition(get_class($object));
+//        $new_position = $position_service->getNewPosition($object, $move, $last_position);
+//
+//        $object->setPosition($new_position);
         $this->admin->update($object);
 
         if ($this->isXmlHttpRequest()) {

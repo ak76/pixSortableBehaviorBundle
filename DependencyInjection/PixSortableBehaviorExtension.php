@@ -14,6 +14,7 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 use Symfony\Component\DependencyInjection\Loader;
+use Symfony\Component\DependencyInjection\Alias;
 
 /**
  * This is the class that loads and manages your bundle configuration
@@ -32,5 +33,9 @@ class PixSortableBehaviorExtension extends Extension
 
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.yml');
+
+        $container->setParameter('pix.sortable.behavior.position.field', $config['position_field']);
+        $positionHandler = sprintf('pix_sortable_behavior.position.%s', $config['db_driver']);
+        $container->setAlias('pix_sortable_behavior.position', new Alias($positionHandler));
     }
 }

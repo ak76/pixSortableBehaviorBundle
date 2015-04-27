@@ -7,26 +7,17 @@ Implementation for the Sonata Admin bundle explained in the cookbook
 
 https://github.com/sonata-project/SonataAdminBundle/blob/master/Resources/doc/cookbook/recipe_sortable_listing.rst
 
+### Configuration
 
+By default, this extension works with Doctrine ORM, but you can choose to use Doctrine MongoDB by defining the driver configuration : 
 
-What's new in my fork
----------------------
-
-* Added some code in PositionHandler from fork https://github.com/Stelss0007/pixSortableBehaviorBundle
-
-* Added some code in SortableAdminController from fork https://github.com/dlabs/pixSortableBehaviorBundle
-
-* Added two different templates for bootstrap v2 & v3. Now use another paths for templates: `PixSortableBehaviorBundle:Sort/bootstrap2:_sort.html.twig` or `PixSortableBehaviorBundle:Sort/bootstrap3:_sort.html.twig`
-
-* Replaced ugly html entity arrows by bootstrap icons
-
-* It's strongly recommended in route 'move' use requirement for value {move}: `$collection->add('move', $this->getRouterIdParameter() . '/move/{move}', [], ['move' => 'up|down|top|bottom']);`
-
-
-
-TODO
-----
-
-* Add translation for titles in _sort.html.twig
-
-* Add ability to use custom name of the order field.
+``` yaml
+# app/config/config.yml
+pix_sortable_behavior:
+    db_driver: mongodb # default value : orm
+    position_field:
+        default: sort #default value : position
+        entities:
+            AcmeBundle/Entity/Foobar: order
+            AcmeBundle/Entity/Baz: rang
+```

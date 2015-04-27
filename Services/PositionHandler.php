@@ -10,68 +10,73 @@
 
 namespace Pix\SortableBehaviorBundle\Services;
 
-use Doctrine\ORM\EntityManager;
-
-class PositionHandler
+abstract class PositionHandler
 {
     const UP        = 'up';
     const DOWN      = 'down';
     const TOP       = 'top';
     const BOTTOM    = 'bottom';
 
-    /**
-     * @var EntityManager
-     */
-    protected $em;
+    protected $positionField;
+
+    abstract public function getLastPosition($entity);
 
     /**
-     * @param EntityManager $entityManager
+     * @param mixed $positionField
      */
-    public function __construct(EntityManager $entityManager)
+    public function setPositionField($positionField)
     {
-        $this->em = $entityManager;
+        $this->positionField = $positionField;
+    }
+
+    /**
+     * @param $entity
+     *
+     * @return string
+     */
+    public function getPositionFieldByEntity($entity) {
+        if(is_object($entity)) {
+            $entity = \Doctrine\Common\Util\ClassUtils::getClass($entity);
+        }
+        if(isset($this->positionField['entities'][$entity])) {
+            return $this->positionField['entities'][$entity];
+        } else {
+            return $this->positionField['default'];
+        }
     }
 
     /**
      * @param $object
-     * @param $move
-     */
-    public function updatePosition(&$object, $move)
-    {
-        $last_position = $this->getLastPosition(get_class($object));
-        $new_position = $this->getNewPosition($object, $move, $last_position);
-        $object->setPosition($new_position);
-    }
-
-    /**
-     * @param $object
-     * @param $move
+     * @param $position
      * @param $last_position
+     *
      * @return int
      */
-    protected function getNewPosition($object, $move, $last_position)
+    public function getPosition($object, $position, $last_position)
     {
-        switch ($move) {
-            case self::UP:
-                if ($object->getPosition() > 0) {
-                    $new_position = $object->getPosition() - 1;
+        $getter = sprintf('get%s', ucfirst($this->getPositionFieldByEntity($object)));
+        $new_position = 0;
+        switch ($position) {
+            case 'up' :
+                if ($object->{$getter}() > 0) {
+                    $new_position = $object->{$getter}() - 1;
                 }
                 break;
 
-            case self::DOWN:
-                if ($object->getPosition() < $last_position) {
-                    $new_position = $object->getPosition() + 1;
+            case 'down':
+                if ($object->{$getter}() < $last_position) {
+                    $new_position = $object->{$getter}() + 1;
                 }
                 break;
 
-            case self::TOP:
-                if ($object->getPosition() > 0) {
+            case 'top':
+                if ($object->{$getter}() > 0) {
                     $new_position = 0;
                 }
                 break;
 
-            case self::BOTTOM:
-                if ($object->getPosition() < $last_position) {
+            case 'bottom':
+                if ($object->{$getter}() < $last_position) {
                     $new_position = $last_position;
                 }
                 break;
@@ -80,19 +85,5 @@ class PositionHandler
         return $new_position;
     }
 
-    /**
-     * @param $entity
-     * @return int
-     */
-    public function getLastPosition($entity)
-    {
-        $query = $this->em->createQuery('SELECT MAX(m.position) FROM ' . $entity . ' m');
-        $result = $query->getResult();
 
-        if (array_key_exists(0, $result)) {
-            return intval($result[0][1]);
-        }
-
-        return 0;
-    }
 }

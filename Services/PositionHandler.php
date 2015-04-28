@@ -73,25 +73,25 @@ abstract class PositionHandler
         $currentPosition = $this->propertyAccessor->getValue($object, $propertyName);
 
         switch ($move) {
-            case 'up' :
+            case self::MOVE_UP:
                 if ($currentPosition > 0) {
                     $currentPosition--;
                 }
                 break;
 
-            case 'down':
+            case self::MOVE_DOWN:
                 if ($currentPosition < $lastPosition) {
                     $currentPosition++;
                 }
                 break;
 
-            case 'top':
+            case self::MOVE_TOP:
                 if ($currentPosition > 0) {
                     $currentPosition = 0;
                 }
                 break;
 
-            case 'bottom':
+            case self::MOVE_BOTTOM:
                 if ($currentPosition < $lastPosition) {
                     $currentPosition = $lastPosition;
                 }

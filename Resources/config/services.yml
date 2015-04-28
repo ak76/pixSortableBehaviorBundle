@@ -3,6 +3,7 @@ services:
         class: Pix\SortableBehaviorBundle\Services\PositionORMHandler
         public: false
         arguments:
+            propertyAccessor: "@property_accessor"
             entityManager: "@doctrine.orm.entity_manager"
         calls:
             - [ 'setPositionField', [%pix.sortable.behavior.position.field%]]
@@ -11,14 +12,16 @@ services:
         class: Pix\SortableBehaviorBundle\Services\PositionODMHandler
         public: false
         arguments:
+            propertyAccessor: "@property_accessor"
             documentManager: "@doctrine_mongodb.odm.document_manager"
         calls:
-            - [ 'setPositionField', [%pix.sortable.behavior.position.field%]]
+            - [ 'setPositionField', ["%pix.sortable.behavior.position.field%"]]
 
     pix_sortable_behavior.twig.extension:
         class: Pix\SortableBehaviorBundle\Twig\ObjectPositionExtension
         arguments:
-            - @pix_sortable_behavior.position
+            - "@property_accessor"
+            - "@pix_sortable_behavior.position"
         public: false
         tags:
             - { name: twig.extension }

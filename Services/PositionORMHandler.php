@@ -11,26 +11,33 @@
 namespace Pix\SortableBehaviorBundle\Services;
 
 use Doctrine\ORM\EntityManager;
+use Symfony\Component\Security\Core\Util\ClassUtils;
 
 class PositionORMHandler extends PositionHandler
 {
-
-    /**
-     *
-     * @var EntityManager
-     */
+    /** @var EntityManager */
     protected $em;
 
-    public function __construct(EntityManager $entityManager)
+    /**
+     * @param \Symfony\Component\PropertyAccess\PropertyAccessor $propertyAccessor
+     * @param EntityManager $entityManager
+     */
+    public function __construct($propertyAccessor, EntityManager $entityManager)
     {
+        parent::__construct($propertyAccessor);
         $this->em = $entityManager;
     }
 
+    /**
+     * @param $entity
+     * @return int
+     */
     public function getLastPosition($entity)
     {
+        $entity = is_object($entity) ? ClassUtils::getRealClass($entity) : $entity;
         $query = $this->em->createQuery(sprintf(
             'SELECT MAX(m.%s) FROM %s m',
-            $positionFiles = $this->getPositionFieldByEntity($entity),
+            $this->getPositionFieldByEntity($entity),
             $entity
         ));
         $result = $query->getResult();
@@ -41,6 +48,4 @@ class PositionORMHandler extends PositionHandler
 
         return 0;
     }
-
-
 }

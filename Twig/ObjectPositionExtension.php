@@ -3,22 +3,24 @@
 namespace Pix\SortableBehaviorBundle\Twig;
 
 use Pix\SortableBehaviorBundle\Services\PositionHandler;
+use Symfony\Component\PropertyAccess\PropertyAccessor;
 
 /**
  * Description of ObjectPositionExtension
- * 
+ *
  * @author Volker von Hoesslin <volker.von.hoesslin@empora.com>
  */
 class ObjectPositionExtension extends \Twig_Extension
 {
     const NAME = 'sortableObjectPosition';
 
-    /** @var PositionHandler $position_service */
-    private $position_service;
+    /** @var PositionHandler $positionService */
+    private $positionService;
 
-    function __construct(PositionHandler $position_service)
+    function __construct(PropertyAccessor $propertyAccessor, PositionHandler $positionService)
     {
-        $this->position_service = $position_service;
+        $this->propertyAccessor = $propertyAccessor;
+        $this->positionService = $positionService;
     }
 
     /**
@@ -26,7 +28,8 @@ class ObjectPositionExtension extends \Twig_Extension
      *
      * @return string The extension name
      */
-    public function getName() {
+    public function getName()
+    {
         return self::NAME;
     }
 
@@ -34,10 +37,8 @@ class ObjectPositionExtension extends \Twig_Extension
     {
         return array(
             new \Twig_SimpleFunction(self::NAME,
-                function ($entity)
-                {
-                    $getter = sprintf('get%s', ucfirst($this->position_service->getPositionFieldByEntity($entity)));
-                    return $entity->{$getter}();
+                function ($entity) {
+                    return $this->propertyAccessor->getValue($entity, $this->positionService->getPositionFieldByEntity($entity));
                 }
             )
         );

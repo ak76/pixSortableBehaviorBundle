@@ -10,19 +10,35 @@
 
 namespace Pix\SortableBehaviorBundle\Services;
 
+use Symfony\Component\PropertyAccess\PropertyAccessor;
+use Symfony\Component\Security\Core\Util\ClassUtils;
+
 abstract class PositionHandler
 {
-    const UP        = 'up';
-    const DOWN      = 'down';
-    const TOP       = 'top';
-    const BOTTOM    = 'bottom';
+    const MOVE_UP = 'up';
+    const MOVE_DOWN = 'down';
+    const MOVE_TOP = 'top';
+    const MOVE_BOTTOM = 'bottom';
 
+    /** @var  PropertyAccessor */
+    protected $propertyAccessor;
+
+    /** @var  array */
     protected $positionField;
 
+    public function __construct(PropertyAccessor $propertyAccessor)
+    {
+        $this->propertyAccessor = $propertyAccessor;
+    }
+
+    /**
+     * @param $entity
+     * @return mixed
+     */
     abstract public function getLastPosition($entity);
 
     /**
-     * @param mixed $positionField
+     * @param $positionField
      */
     public function setPositionField($positionField)
     {
@@ -31,14 +47,15 @@ abstract class PositionHandler
 
     /**
      * @param $entity
-     *
-     * @return string
+     * @return mixed
      */
-    public function getPositionFieldByEntity($entity) {
-        if(is_object($entity)) {
-            $entity = \Doctrine\Common\Util\ClassUtils::getClass($entity);
+    public function getPositionFieldByEntity($entity)
+    {
+        if (is_object($entity)) {
+            $entity = ClassUtils::getRealClass($entity);
         }
-        if(isset($this->positionField['entities'][$entity])) {
+
+        if (isset($this->positionField['entities'][$entity])) {
             return $this->positionField['entities'][$entity];
         } else {
             return $this->positionField['default'];
@@ -47,43 +64,40 @@ abstract class PositionHandler
 
     /**
      * @param $object
-     * @param $position
-     * @param $last_position
-     *
-     * @return int
+     * @param $move
      */
-    public function getPosition($object, $position, $last_position)
+    public function updatePosition($object, $move)
     {
-        $getter = sprintf('get%s', ucfirst($this->getPositionFieldByEntity($object)));
-        $new_position = 0;
-        switch ($position) {
+        $fieldName = $this->getPositionFieldByEntity($object);
+        $last_position = $this->getLastPosition(ClassUtils::getRealClass($object));
+        $currentPosition = $this->propertyAccessor->getValue($object, $fieldName);
+
+        switch ($move) {
             case 'up' :
-                if ($object->{$getter}() > 0) {
-                    $new_position = $object->{$getter}() - 1;
+                if ($currentPosition > 0) {
+                    $currentPosition--;
                 }
                 break;
 
             case 'down':
-                if ($object->{$getter}() < $last_position) {
-                    $new_position = $object->{$getter}() + 1;
+                if ($currentPosition < $last_position) {
+                    $currentPosition++;
                 }
                 break;
 
             case 'top':
-                if ($object->{$getter}() > 0) {
-                    $new_position = 0;
+                if ($currentPosition > 0) {
+                    $currentPosition = 0;
                 }
                 break;
 
             case 'bottom':
-                if ($object->{$getter}() < $last_position) {
-                    $new_position = $last_position;
+                if ($currentPosition < $last_position) {
+                    $currentPosition = $last_position;
                 }
                 break;
         }
 
-        return $new_position;
+        $this->propertyAccessor->setValue($object, $fieldName, $currentPosition);
     }
-
-
 }

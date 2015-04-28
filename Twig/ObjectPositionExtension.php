@@ -38,7 +38,7 @@ class ObjectPositionExtension extends \Twig_Extension
         return array(
             new \Twig_SimpleFunction(self::NAME,
                 function ($entity) {
-                    return $this->propertyAccessor->getValue($entity, $this->positionService->getPositionFieldByEntity($entity));
+                    return $this->propertyAccessor->getValue($entity, $this->positionService->getPositionPropertyByEntity($entity));
                 }
             )
         );

@@ -37,7 +37,7 @@ class PositionORMHandler extends PositionHandler
         $entity = is_object($entity) ? ClassUtils::getRealClass($entity) : $entity;
         $query = $this->em->createQuery(sprintf(
             'SELECT MAX(m.%s) FROM %s m',
-            $this->getPositionFieldByEntity($entity),
+            $this->getPositionPropertyByEntity($entity),
             $entity
         ));
         $result = $query->getResult();

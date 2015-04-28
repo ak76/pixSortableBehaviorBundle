@@ -39,7 +39,7 @@ class Configuration implements ConfigurationInterface
                 ->cannotBeEmpty()
                 ->defaultValue('orm')
             ->end()
-            ->arrayNode('position_field')
+            ->arrayNode('position_property')
                 ->addDefaultsIfNotSet()
                 ->children()
                     ->scalarNode('default')->defaultValue('position')->end()

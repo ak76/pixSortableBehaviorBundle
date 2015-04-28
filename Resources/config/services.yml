@@ -6,7 +6,7 @@ services:
             propertyAccessor: "@property_accessor"
             entityManager: "@doctrine.orm.entity_manager"
         calls:
-            - [ 'setPositionField', [%pix.sortable.behavior.position.field%]]
+            - [ 'setPositionProperty', [%pix.sortable.behavior.position.property%]]
 
     pix_sortable_behavior.position.mongodb:
         class: Pix\SortableBehaviorBundle\Services\PositionODMHandler
@@ -15,7 +15,7 @@ services:
             propertyAccessor: "@property_accessor"
             documentManager: "@doctrine_mongodb.odm.document_manager"
         calls:
-            - [ 'setPositionField', ["%pix.sortable.behavior.position.field%"]]
+            - [ 'setPositionProperty', ["%pix.sortable.behavior.position.property%"]]
 
     pix_sortable_behavior.twig.extension:
         class: Pix\SortableBehaviorBundle\Twig\ObjectPositionExtension

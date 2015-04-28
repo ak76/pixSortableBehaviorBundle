@@ -24,7 +24,7 @@ abstract class PositionHandler
     protected $propertyAccessor;
 
     /** @var  array */
-    protected $positionField;
+    protected $positionProperty;
 
     public function __construct(PropertyAccessor $propertyAccessor)
     {
@@ -38,27 +38,27 @@ abstract class PositionHandler
     abstract public function getLastPosition($entity);
 
     /**
-     * @param $positionField
+     * @param $positionProperty
      */
-    public function setPositionField($positionField)
+    public function setPositionProperty($positionProperty)
     {
-        $this->positionField = $positionField;
+        $this->positionProperty = $positionProperty;
     }
 
     /**
      * @param $entity
      * @return mixed
      */
-    public function getPositionFieldByEntity($entity)
+    public function getPositionPropertyByEntity($entity)
     {
         if (is_object($entity)) {
             $entity = ClassUtils::getRealClass($entity);
         }
 
-        if (isset($this->positionField['entities'][$entity])) {
-            return $this->positionField['entities'][$entity];
+        if (isset($this->positionProperty['entities'][$entity])) {
+            return $this->positionProperty['entities'][$entity];
         } else {
-            return $this->positionField['default'];
+            return $this->positionProperty['default'];
         }
     }
 
@@ -68,9 +68,9 @@ abstract class PositionHandler
      */
     public function updatePosition($object, $move)
     {
-        $fieldName = $this->getPositionFieldByEntity($object);
-        $last_position = $this->getLastPosition(ClassUtils::getRealClass($object));
-        $currentPosition = $this->propertyAccessor->getValue($object, $fieldName);
+        $propertyName = $this->getPositionPropertyByEntity($object);
+        $lastPosition = $this->getLastPosition(ClassUtils::getRealClass($object));
+        $currentPosition = $this->propertyAccessor->getValue($object, $propertyName);
 
         switch ($move) {
             case 'up' :
@@ -80,7 +80,7 @@ abstract class PositionHandler
                 break;
 
             case 'down':
-                if ($currentPosition < $last_position) {
+                if ($currentPosition < $lastPosition) {
                     $currentPosition++;
                 }
                 break;
@@ -92,12 +92,12 @@ abstract class PositionHandler
                 break;
 
             case 'bottom':
-                if ($currentPosition < $last_position) {
-                    $currentPosition = $last_position;
+                if ($currentPosition < $lastPosition) {
+                    $currentPosition = $lastPosition;
                 }
                 break;
         }
 
-        $this->propertyAccessor->setValue($object, $fieldName, $currentPosition);
+        $this->propertyAccessor->setValue($object, $propertyName, $currentPosition);
     }
 }

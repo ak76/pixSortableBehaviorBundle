@@ -33,7 +33,7 @@ class PositionODMHandler extends PositionHandler
      */
     public function getLastPosition($entity)
     {
-        $positionFiles = $this->getPositionFieldByEntity($entity);
+        $positionFiles = $this->getPositionPropertyByEntity($entity);
         $result = $this->dm
             ->createQueryBuilder($entity)
             ->hydrate(false)

@@ -1,4 +1,5 @@
 {% set currentPosition = sortableObjectPosition(object) %}
+{% set lastPosition = sortableObjectLastPosition(object) %}
 
 {% if currentPosition > 0 %}
     <a class="btn btn-small" href="{{ admin.generateObjectUrl('move', object, {'move': 'top'}) }}" title="{{ 'move.top'|trans }}"><i class="icon icon-step-backward"></i></a>
@@ -8,10 +9,10 @@
     <a class="btn btn-small" href="{{ admin.generateObjectUrl('move', object, {'move': 'up'}) }}" title="{{ 'move.up'|trans }}"><i class="icon icon-arrow-up"></i></a>
 {% endif %}
 
-{% if currentPosition < admin.lastPosition %}
+{% if currentPosition < lastPosition %}
     <a class="btn btn-small" href="{{ admin.generateObjectUrl('move', object, {'move': 'down'}) }}" title="{{ 'move.down'|trans }}"><i class="icon icon-arrow-down"></i></a>
 {% endif %}
 
-{% if currentPosition < admin.lastPosition %}
+{% if currentPosition < lastPosition %}
     <a class="btn btn-small" href="{{ admin.generateObjectUrl('move', object, {'move': 'bottom'}) }}" title="{{ 'move.bottom'|trans }}"><i class="icon icon-step-forward"></i></a>
 {% endif %}

@@ -20,8 +20,9 @@ class SortableAdminController extends CRUDController
      * Move element
      *
      * @param Request $request
-     * @param $id
-     * @param $move
+     * @param         $id
+     * @param         $move
+     *
      * @return RedirectResponse|\Symfony\Component\HttpFoundation\Response
      */
     public function moveAction(Request $request, $id, $move)
@@ -33,14 +34,14 @@ class SortableAdminController extends CRUDController
         $this->admin->update($object);
 
         if ($this->isXmlHttpRequest()) {
-            return $this->renderJson([
+            return $this->renderJson(array(
                 'result' => 'ok',
                 'objectId' => $this->admin->getNormalizedIdentifier($object)
-            ]);
+            ));
         }
 
         $this->get('session')->getFlashBag()->set('sonata_flash_info', $this->get('translator.default')->trans('Position updated'));
 
-        return new RedirectResponse($this->admin->generateUrl('list', ['filter' => $this->admin->getFilterParameters()]));
+        return new RedirectResponse($this->admin->generateUrl('list', array('filter' => $this->admin->getFilterParameters())));
     }
 }

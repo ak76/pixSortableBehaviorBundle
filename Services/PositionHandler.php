@@ -26,6 +26,12 @@ abstract class PositionHandler
     /** @var  array */
     protected $positionProperty;
 
+    /** @var  int */
+    protected $lastPosition;
+
+    /**
+     * @param PropertyAccessor $propertyAccessor
+     */
     public function __construct(PropertyAccessor $propertyAccessor)
     {
         $this->propertyAccessor = $propertyAccessor;
@@ -33,9 +39,18 @@ abstract class PositionHandler
 
     /**
      * @param $entity
+     *
      * @return mixed
      */
     abstract public function getLastPosition($entity);
+
+    /**
+     * @return string
+     */
+    public static function getMoves()
+    {
+        return join('|', array(self::MOVE_UP, self::MOVE_DOWN, self::MOVE_TOP, self::MOVE_BOTTOM));
+    }
 
     /**
      * @param $positionProperty
@@ -47,6 +62,7 @@ abstract class PositionHandler
 
     /**
      * @param $entity
+     *
      * @return mixed
      */
     public function getPositionPropertyByEntity($entity)
@@ -57,7 +73,8 @@ abstract class PositionHandler
 
         if (isset($this->positionProperty['entities'][$entity])) {
             return $this->positionProperty['entities'][$entity];
-        } else {
+        }
+        else {
             return $this->positionProperty['default'];
         }
     }
@@ -69,7 +86,7 @@ abstract class PositionHandler
     public function updatePosition($object, $move)
     {
         $propertyName = $this->getPositionPropertyByEntity($object);
-        $lastPosition = $this->getLastPosition(ClassUtils::getRealClass($object));
+        $lastPosition = $this->getLastPosition(ClassUtils::getRealClass($object), true);
         $currentPosition = $this->propertyAccessor->getValue($object, $propertyName);
 
         switch ($move) {

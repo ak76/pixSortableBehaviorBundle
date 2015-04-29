@@ -11,6 +11,7 @@
 namespace Pix\SortableBehaviorBundle\Services;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Symfony\Component\PropertyAccess\PropertyAccessor;
 
 class PositionODMHandler extends PositionHandler
 {
@@ -18,8 +19,8 @@ class PositionODMHandler extends PositionHandler
     protected $dm;
 
     /**
-     * @param \Symfony\Component\PropertyAccess\PropertyAccessor $propertyAccessor
-     * @param DocumentManager $documentManager
+     * @param PropertyAccessor $propertyAccessor
+     * @param DocumentManager  $documentManager
      */
     public function __construct($propertyAccessor, DocumentManager $documentManager)
     {
@@ -28,11 +29,17 @@ class PositionODMHandler extends PositionHandler
     }
 
     /**
-     * @param $entity
+     * @param      $entity
+     * @param bool $forceUpdate
+     *
      * @return int
      */
-    public function getLastPosition($entity)
+    public function getLastPosition($entity, $forceUpdate = false)
     {
+        if ($this->lastPosition && !$forceUpdate) {
+            return $this->lastPosition;
+        }
+
         $positionFiles = $this->getPositionPropertyByEntity($entity);
         $result = $this->dm
             ->createQueryBuilder($entity)
@@ -44,7 +51,9 @@ class PositionODMHandler extends PositionHandler
             ->getSingleResult();
 
         if (is_array($result) && isset($result[$positionFiles])) {
-            return $result[$positionFiles];
+            $this->lastPosition = $result[$positionFiles];
+
+            return $this->lastPosition;
         }
 
         return 0;

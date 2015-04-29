@@ -10,21 +10,8 @@
 
 namespace Pix\SortableBehaviorBundle;
 
-use Doctrine\ORM\EntityManager;
-use Gedmo\Sortable\SortableListener;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
 class PixSortableBehaviorBundle extends Bundle
 {
-    public function boot()
-    {
-        /**
-         * @var $em EntityManager
-         */
-        $em = $this->container->get('doctrine.orm.default_entity_manager');
-
-        // get the event manager
-        $evm = $em->getEventManager();
-        $evm->addEventSubscriber(new SortableListener());
-    }
 }

@@ -21,3 +21,17 @@ pix_sortable_behavior:
             AcmeBundle/Entity/Foobar: order
             AcmeBundle/Entity/Baz: rang
 ```
+
+## Changes in my fork
+
+1. Added function ``sortableObjectLastPosition`` in Twig extension. This caused removing $lastPosition and $positionService from ``ClientAdmin`` configuration. Also changed templates:
+``` twig
+{% set lastPosition = sortableObjectLastPosition(object) %}
+...
+```
+
+2. Added PropertyAccessor in services and Twig extension for getting and setting values in object.
+
+3. Refactored controller and services.
+
+4. Added two separate templates: for Bootstrap v2 & v3.

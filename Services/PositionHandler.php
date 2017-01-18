@@ -10,8 +10,8 @@
 
 namespace Pix\SortableBehaviorBundle\Services;
 
+use Doctrine\Common\Util\ClassUtils;
 use Symfony\Component\PropertyAccess\PropertyAccessor;
-use Symfony\Component\Security\Core\Util\ClassUtils;
 
 abstract class PositionHandler
 {
@@ -23,8 +23,19 @@ abstract class PositionHandler
     /** @var  PropertyAccessor */
     protected $propertyAccessor;
 
-    /** @var  array */
+    /**
+     * From config
+     *
+     * @var  array
+     */
     protected $positionProperty;
+
+    /**
+     * From config
+     *
+     * @var array
+     */
+    protected $sortableGroups;
 
     /** @var  int */
     protected $lastPosition;
@@ -39,10 +50,11 @@ abstract class PositionHandler
 
     /**
      * @param $entity
+     * @param bool $forceUpdate
      *
      * @return mixed
      */
-    abstract public function getLastPosition($entity);
+    abstract public function getLastPosition($entity, $forceUpdate = false);
 
     /**
      * @return string
@@ -53,11 +65,19 @@ abstract class PositionHandler
     }
 
     /**
-     * @param $positionProperty
+     * @param array $positionProperty
      */
-    public function setPositionProperty($positionProperty)
+    public function setPositionProperty(array $positionProperty)
     {
         $this->positionProperty = $positionProperty;
+    }
+
+    /**
+     * @param array $sortableGroups
+     */
+    public function setSortableGroups(array $sortableGroups)
+    {
+        $this->sortableGroups = $sortableGroups;
     }
 
     /**
@@ -68,7 +88,7 @@ abstract class PositionHandler
     public function getPositionPropertyByEntity($entity)
     {
         if (is_object($entity)) {
-            $entity = ClassUtils::getRealClass($entity);
+            $entity = ClassUtils::getClass($entity);
         }
 
         if (isset($this->positionProperty['entities'][$entity])) {
@@ -80,13 +100,33 @@ abstract class PositionHandler
     }
 
     /**
+     * @param $entity
+     *
+     * @return array
+     */
+    public function getSortableGroupsFieldByEntity($entity)
+    {
+        if (is_object($entity)) {
+            $entity = ClassUtils::getClass($entity);
+        }
+
+        $groups = [];
+
+        if (isset($this->sortableGroups['entities'][$entity])) {
+            $groups = $this->sortableGroups['entities'][$entity];
+        }
+
+        return $groups;
+    }
+
+    /**
      * @param $object
      * @param $move
      */
     public function updatePosition($object, $move)
     {
         $propertyName = $this->getPositionPropertyByEntity($object);
-        $lastPosition = $this->getLastPosition(ClassUtils::getRealClass($object), true);
+        $lastPosition = $this->getLastPosition(ClassUtils::getClass($object), true);
         $currentPosition = $this->propertyAccessor->getValue($object, $propertyName);
 
         switch ($move) {

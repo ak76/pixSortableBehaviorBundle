@@ -27,6 +27,17 @@ class SortableAdminController extends CRUDController
      */
     public function moveAction(Request $request, $id, $move)
     {
+        $translator = $this->get('translator');
+
+        if (!$this->admin->isGranted('EDIT')) {
+            $this->addFlash(
+                'sonata_flash_error',
+                $translator->trans('flash_error_no_rights_update_position')
+            );
+
+            return $this->getRedirectResponse();
+        }
+
         $id = $request->get($this->admin->getIdParameter());
         $object = $this->admin->getObject($id);
 
@@ -40,8 +51,16 @@ class SortableAdminController extends CRUDController
             ));
         }
 
-        $this->get('session')->getFlashBag()->set('sonata_flash_info', $this->get('translator.default')->trans('Position updated'));
+        $this->addFlash('sonata_flash_info', $translator->trans('flash_success_position_updated'));
 
+        return $this->getRedirectResponse();
+    }
+
+    /**
+     * @return RedirectResponse
+     */
+    private function getRedirectResponse()
+    {
         return new RedirectResponse($this->admin->generateUrl('list', array('filter' => $this->admin->getFilterParameters())));
     }
 }

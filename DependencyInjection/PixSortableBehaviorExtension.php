@@ -35,6 +35,7 @@ class PixSortableBehaviorExtension extends Extension
         $loader->load('services.yml');
 
         $container->setParameter('pix.sortable.behavior.position.property', $config['position_property']);
+        $container->setParameter('pix.sortable.behavior.sortable_groups', $config['sortable_groups']);
         $positionHandler = sprintf('pix_sortable_behavior.position.%s', $config['db_driver']);
         $container->setAlias('pix_sortable_behavior.position', new Alias($positionHandler));
     }

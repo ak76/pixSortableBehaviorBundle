@@ -5,7 +5,9 @@
 # Time: 7:26
 #
 
-'Position updated': Порядок обновлён
+flash_success_position_updated:         Порядок обновлён
+flash_error_no_rights_update_position:  У вас нет прав на изменение порядка элементов
+
 move:
     bottom:      Переместить в конец
     down:        Вниз

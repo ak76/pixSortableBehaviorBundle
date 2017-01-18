@@ -10,9 +10,9 @@
 
 namespace Pix\SortableBehaviorBundle\Services;
 
+use Doctrine\Common\Util\ClassUtils;
 use Doctrine\ORM\EntityManager;
 use Symfony\Component\PropertyAccess\PropertyAccessor;
-use Symfony\Component\Security\Core\Util\ClassUtils;
 
 class PositionORMHandler extends PositionHandler
 {
@@ -41,20 +41,29 @@ class PositionORMHandler extends PositionHandler
             return $this->lastPosition;
         }
 
-        $entity = is_object($entity) ? ClassUtils::getRealClass($entity) : $entity;
-        $query = $this->em->createQuery(sprintf(
-            'SELECT MAX(m.%s) FROM %s m',
-            $this->getPositionPropertyByEntity($entity),
-            $entity
-        ));
-        $result = $query->getResult();
+        $entityClass = is_object($entity) ? ClassUtils::getClass($entity) : $entity;
+        $groups = $this->getSortableGroupsFieldByEntity($entityClass);
 
-        if (array_key_exists(0, $result)) {
-            $this->lastPosition = intval($result[0][1]);
+        $qb = $this->em->createQueryBuilder()
+            ->select(sprintf('MAX(t.%s)', $this->getPositionPropertyByEntity($entityClass)))
+            ->from($entityClass, 't')
+        ;
 
-            return $this->lastPosition;
+        if ($groups) {
+            foreach ($groups as $groupName) {
+                $getter = 'get' . $groupName;
+
+                if ($entity->$getter()) {
+                    $qb
+                        ->andWhere(sprintf('t.%s = :group_%s', $groupName, $groupName))
+                        ->setParameter(sprintf('group_%s', $groupName), $entity->$getter())
+                    ;
+                }
+            }
         }
 
-        return 0;
+        $this->lastPosition = (int)$qb->getQuery()->getSingleScalarResult();
+
+        return $this->lastPosition;
     }
 }

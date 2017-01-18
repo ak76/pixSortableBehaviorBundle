@@ -12,6 +12,8 @@ use Symfony\Component\PropertyAccess\PropertyAccessor;
  */
 class ObjectPositionExtension extends \Twig_Extension
 {
+    const NAME = 'objectPosition';
+
     /** @var PropertyAccessor $propertyAccessor */
     private $propertyAccessor;
 
@@ -29,6 +31,19 @@ class ObjectPositionExtension extends \Twig_Extension
     }
 
     /**
+     * @return PropertyAccessor
+     */
+    public function getPropertyAccessor()
+    {
+        return $this->propertyAccessor;
+    }
+
+    public function getPositionService()
+    {
+        return $this->positionService;
+    }
+
+    /**
      * @return array
      */
     public function getFunctions()
@@ -36,12 +51,12 @@ class ObjectPositionExtension extends \Twig_Extension
         return array(
             new \Twig_SimpleFunction('sortableObjectPosition',
                 function ($entity) {
-                    return $this->propertyAccessor->getValue($entity, $this->positionService->getPositionPropertyByEntity($entity));
+                    return $this->getPropertyAccessor()->getValue($entity, $this->getPositionService()->getPositionPropertyByEntity($entity));
                 }
             ),
             new \Twig_SimpleFunction('sortableObjectLastPosition',
                 function ($entity) {
-                    return $this->positionService->getLastPosition($entity);
+                    return $this->getPositionService()->getLastPosition($entity);
                 }
             )
         );
@@ -54,6 +69,6 @@ class ObjectPositionExtension extends \Twig_Extension
      */
     public function getName()
     {
-        return 'objectPosition';
+        return self::NAME;
     }
 }

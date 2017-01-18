@@ -7,6 +7,7 @@ services:
             entityManager: "@doctrine.orm.entity_manager"
         calls:
             - [ 'setPositionProperty', [%pix.sortable.behavior.position.property%] ]
+            - [ 'setSortableGroups', [%pix.sortable.behavior.sortable_groups%] ]
 
     pix_sortable_behavior.position.mongodb:
         class: Pix\SortableBehaviorBundle\Services\PositionODMHandler
@@ -16,6 +17,7 @@ services:
             documentManager: "@doctrine_mongodb.odm.document_manager"
         calls:
             - [ 'setPositionProperty', ["%pix.sortable.behavior.position.property%"] ]
+            - [ 'setSortableGroups', [%pix.sortable.behavior.sortable_groups%] ]
 
     pix_sortable_behavior.twig.extension:
         class: Pix\SortableBehaviorBundle\Twig\ObjectPositionExtension

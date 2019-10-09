@@ -3,8 +3,8 @@ services:
         class: Pix\SortableBehaviorBundle\Services\PositionORMHandler
         public: false
         arguments:
-            propertyAccessor: "@property_accessor"
-            entityManager: "@doctrine.orm.entity_manager"
+            - "@property_accessor"
+            - "@doctrine.orm.entity_manager"
         calls:
             - [ 'setPositionProperty', [%pix.sortable.behavior.position.property%] ]
             - [ 'setSortableGroups', [%pix.sortable.behavior.sortable_groups%] ]
@@ -13,8 +13,8 @@ services:
         class: Pix\SortableBehaviorBundle\Services\PositionODMHandler
         public: false
         arguments:
-            propertyAccessor: "@property_accessor"
-            documentManager: "@doctrine_mongodb.odm.document_manager"
+            - "@property_accessor"
+            - "@doctrine_mongodb.odm.document_manager"
         calls:
             - [ 'setPositionProperty', ["%pix.sortable.behavior.position.property%"] ]
             - [ 'setSortableGroups', [%pix.sortable.behavior.sortable_groups%] ]
